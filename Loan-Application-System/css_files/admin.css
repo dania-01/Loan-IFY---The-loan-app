@@ -1,0 +1,108 @@
+/* ===== Admin Page General Styles ===== */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+/* ===== Table Container ===== */
+.container h2 {
+  margin-bottom: 20px;
+  color: #343a40;
+}
+
+#loan-table {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+#loan-table th, #loan-table td {
+  vertical-align: middle !important;
+  text-align: center;
+}
+
+/* ===== Buttons ===== */
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 5px;
+}
+
+/* ===== Badge Styles for Status ===== */
+.badge {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-pending {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-accepted {
+  background-color: #28a745;
+  color: white;
+}
+
+.badge-rejected {
+  background-color: #dc3545;
+  color: white;
+}
+
+.badge-completed {
+  background-color: #007bff;
+  color: white;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  #loan-table thead {
+    display: none;
+  }
+
+  #loan-table, tbody, tr, td {
+    display: block;
+    width: 100%;
+  }
+
+  #loan-table tr {
+    margin-bottom: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  #loan-table td {
+    text-align: right;
+    padding-left: 10%;
+    position: relative;
+    word-wrap: break-word;   /* allow wrapping */
+    word-break: break-all;   /* force breaking for long strings */
+    white-space: normal;
+  }
+
+  #loan-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    text-align: left;
+    font-weight: bold;
+  }
+}

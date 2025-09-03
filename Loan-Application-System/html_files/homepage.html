@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loanify - Smart Lending Simplified</title>
+  <link rel="icon" href="../assests_file/Loanify-titlelogo.png" type="image/png">
+  <link rel="stylesheet" href="../css_files/homepage.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="home-nav">
+    <div class="nav-container">
+      <!-- Logo -->
+      <a href="../index.html" class="logo">
+        <img src="../assests_file/Loanify-titlelogo.png" alt="Loan-IFY Logo">
+        <span class="company-name">Loan-IFY</span>
+      </a>
+
+      <!-- Hamburger -->
+      <button class="hamburger" id="hamburgerBtn">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+
+      <!-- Nav links -->
+      <div class="nav-links" id="navLinks"></div>
+
+      <!-- Theme toggle -->
+      <button id="themeToggle" class="theme-btn">
+        <span id="themeIcon">🌙 Dark Mode</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Welcome to Loan-IFY</h1>
+    <p>Your trusted partner for fast and secure loan processing</p>
+    <img src="../assests_file/loanifyLogo.png" alt="Loan Application">
+    <a href="signup.html" class="btn">Get Started</a>
+  </section>
+
+  <!-- Services -->
+  <section class="info-section">
+    <div class="container">
+      <h2 class="section-heading">Services We Offer</h2>
+      <ul class="service-list">
+        <li><i class="fas fa-home"></i> Home Loans <br><small>Affordable housing finance with low interest rates.</small></li>
+        <li><i class="fas fa-car"></i> Vehicle Loans <br><small>Drive your dream car with flexible EMIs.</small></li>
+        <li><i class="fas fa-graduation-cap"></i> Education Loans <br><small>Invest in your future with easy student financing.</small></li>
+        <li><i class="fas fa-briefcase"></i> Business Loans <br><small>Boost your business with quick and hassle-free funding.</small></li>
+        <li><i class="fas fa-wallet"></i> Personal Loans <br><small>Instant personal finance for your every need.</small></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- About Us -->
+  <section class="about-us">
+    <div class="about-content container">
+      <img src="../assests_file/team-meeting-1.webp" alt="Team at work">
+      <div class="text">
+        <p>Founded in 2025, <strong>Loan-IFY</strong> started as a small initiative by passionate fintech innovators to simplify loan processes.</p>
+        <p>Our mission is to bridge the gap between financial institutions and customers through fast, secure, and transparent lending experience.</p>
+        <a href="contact.html" class="btn">Join Our Team</a>
+      </div>
+    </div>
+  </section>
+<!-- Reviews Section -->
+<section class="reviews info-section">
+  <div class="container">
+    <h2 class="section-heading">What Our Customers Say</h2>
+    <div class="review-list">
+      <div class="review">
+        <p>"Loan-IFY made getting my home loan so easy and fast!"</p>
+        <strong>- Priya S.</strong>
+      </div>
+      <div class="review">
+        <p>"Highly recommend Loan-IFY for small business financing."</p>
+        <strong>- Raj K.</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq info-section">
+  <div class="container">
+    <h2 class="section-heading">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <strong>Q: How quickly can I get a loan approved?</strong>
+        <p>A: Most applications are processed within 24–48 hours, depending on documentation.</p>
+      </div>
+      <div class="faq-item">
+        <strong>Q: Are there any hidden charges?</strong>
+        <p>A: No, all charges are transparent and disclosed upfront.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- Collaborators -->
+  <section class="section">
+    <h2>Our Collaborators</h2>
+    <div class="partners">
+      <div class="partner">
+        <img src="../assests_file/SBIlogo.webp" alt="SBI Logo">
+        <p>State Bank of India</p>
+      </div>
+      <div class="partner">
+        <img src="../assests_file/hdfcLogo.png" alt="HDFC Logo">
+        <p>HDFC Bank</p>
+      </div>
+      <div class="partner">
+        <img src="../assests_file/relaince logo.png" alt="Reliance Finance Limited">
+        <p>Reliance Finance Limited</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Loan-IFY Inc. All rights reserved.</p>
+    <div class="social-links">
+      <a href="https://twitter.com/yourhandle" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+      <a href="https://linkedin.com/in/yourhandle" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+      <a href="https://github.com/yourhandle" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4eEU5GPpxg0Bp5NFK8GNBUsBVZqxEmJY",
+      authDomain: "loan-application-system-0011.firebaseapp.com",
+      projectId: "loan-application-system-0011",
+      storageBucket: "loan-application-system-0011.firebasestorage.app",
+      messagingSenderId: "591480313230",
+      appId: "1:591480313230:web:ce4606631feb9c334700df",
+      measurementId: "G-JH9Z4XXD6E"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    setPersistence(auth, browserLocalPersistence)
+      .then(() => console.log("Auth persistence enabled ✅"))
+      .catch(err => console.error(err));
+
+    const navLinks = document.getElementById("navLinks");
+    const toggleBtn = document.getElementById('themeToggle');
+    const body = document.body;
+    const icon = document.getElementById('themeIcon');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+    if (localStorage.getItem('theme') === 'dark') {
+      body.classList.add('dark-mode');
+      icon.textContent = '☀️ Light Mode';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      const isDark = body.classList.contains('dark-mode');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      icon.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    });
+
+    hamburgerBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('show');
+    });
+
+    const nav = document.querySelector('.home-nav');
+    const toggler = () => nav.classList.toggle('scrolled', window.scrollY > 20);
+    window.addEventListener('scroll', toggler, { passive: true });
+    toggler();
+
+    onAuthStateChanged(auth, (user) => {
+      navLinks.innerHTML = "";
+      if (user) {
+        navLinks.innerHTML = `
+          <a href="dashboard.html">Dashboard</a>
+          <a href="apply-loan.html">Apply Loan</a>
+          <a href="contact.html">Contact Us</a>
+          <a href="#" id="logoutLink">Logout</a>
+        `;
+        document.getElementById('logoutLink').addEventListener('click', async (e) => {
+          e.preventDefault();
+          try { await signOut(auth); window.location.href = "../index.html"; }
+          catch(err){ console.error(err); }
+        });
+      } else {
+        navLinks.innerHTML = `
+          <a href="../index.html">Login</a>
+          <a href="signup.html">Signup</a>
+          <a href="contact.html">Contact Us</a>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

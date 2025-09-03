@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apply Loan Form</title>
+  <link rel="stylesheet" href="../css_files/apply-loan.css">
+  <link rel="icon" href="../assests_file/Loanify-titlelogo.png" type="image/x-icon">  
+</head>
+<body>
+<nav>
+  <div class="logo-container">
+    <img src="../assests_file/Loanify-titlelogo.png" alt="Company Logo" class="logo">
+    <span class="company-name">Loan-IFY</span>
+  </div>
+  <div class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="contact.html">Contact Us</a>
+    <!-- 🌙 Theme toggle button -->
+    <button id="themeToggle" class="theme-btn">
+      <span id="themeIcon">🌙 Dark Mode</span>
+    </button>
+  </div>
+</nav>
+
+<div id="loan-form-container">
+
+  <header>
+    <h1>Loan Application Form</h1>
+  </header>
+
+  <form id="loan-application-form">
+    <div class="form-group">
+      <label for="loan-amount">Loan Amount ($):</label>
+      <input type="number" id="loan-amount" name="loan-amount" placeholder="Enter loan amount" required>
+    </div>
+
+    <div class="form-group">
+      <label for="interest-rate">Interest Rate (%):</label>
+      <input type="number" id="interest-rate" name="interest-rate" placeholder="Enter interest rate" required>
+    </div>
+
+    <div class="form-group">
+      <label for="loan-duration">Loan Duration (Months):</label>
+      <input type="number" id="loan-duration" name="loan-duration" placeholder="Enter duration in months" required>
+    </div>
+
+    <div class="form-group">
+      <label for="loan-type">Loan Type:</label>
+      <select id="loan-type" name="loan-type" required>
+        <option value="personal">Personal Loan</option>
+        <option value="home">Home Loan</option>
+        <option value="education">Education Loan</option>
+        <option value="auto">Auto Loan</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="loan-purpose">Purpose of Loan:</label>
+      <select id="loan-purpose" name="loan-purpose" required>
+        <option value="buy_house">Buying a House</option>
+        <option value="pay_debts">Paying off Debts</option>
+        <option value="higher_education">Higher Education</option>
+        <option value="business">Business Investment</option>
+        <option value="emergency">Medical Emergency</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <button type="submit">Submit Application</button>
+    </div>
+  </form>
+
+  <div id="emi-calculator">
+    <h2>EMI Calculator</h2>
+    <form id="emi-calculator-form">
+      <div class="form-group">
+        <label for="emi-loan-amount">Loan Amount ($):</label>
+        <input type="number" id="emi-loan-amount" placeholder="Enter loan amount" required>
+      </div>
+
+      <div class="form-group">
+        <label for="emi-interest-rate">Interest Rate (%):</label>
+        <input type="number" id="emi-interest-rate" placeholder="Enter interest rate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="emi-loan-duration">Loan Duration (Months):</label>
+        <input type="number" id="emi-loan-duration" placeholder="Enter duration in months" required>
+      </div>
+
+      <div id="emi-display">
+        <p>Your Monthly EMI will be: <strong><span id="emi-amount">$0.00</span></strong></p>
+      </div>
+
+      <div class="form-group">
+        <button type="button" id="calculate-emi-btn">Calculate EMI</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<footer>
+  <p>&copy; 2025 Loan-IFY Inc. All rights reserved.</p>
+</footer>
+
+<script type="module" src="../js_files/apply-loan.js"></script>
+</body>
+</html>
