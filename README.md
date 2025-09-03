@@ -16,7 +16,7 @@ It offers a seamless dashboard experience where users can:
 Frontend | Backend | Fullstack
 
 ## Deployed App
-Frontend: https://loan-application-sys0101.netlify.app
+Frontend: loan-application-sys0101.netlify.app
 Backend: Firebase (Authentication & Firestore)
 Database: Firebase Firestore
 
