@@ -6,328 +6,281 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contact Us - Loanify</title>
     <link rel="icon" href="../assests_file/Loanify-titlelogo.png" type="image/png">
+    <link rel="stylesheet" href="../css_files/nav.css">
     <link rel="stylesheet" href="../css_files/homepage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* Remove default spacing above and around navbar */
-        html,
-        body {
-            margin: 0;
-            padding: 0;
+        html, body { margin: 0; padding: 0; }
+
+        /* ---- Contact page content ---- */
+        .contact-page {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        @media (max-width: 700px) {
+            .contact-page { grid-template-columns: 1fr; }
         }
 
-        nav {
+        .contact-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 26px;
+            box-shadow: var(--card-shadow);
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .contact-card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8));
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            margin-top: 0;
+            gap: 10px;
         }
-
-        nav a {
-            text-decoration: none;
-            font-weight: 600;
-            color: #0d6efd;
-            font-size: 1.1rem;
-            margin-right: 20px;
-            transition: color 0.2s;
-        }
-
-        nav a:hover {
-            color: #0b5ed7;
-        }
-
-        #themeToggle {
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            border: 1px solid rgba(15, 23, 42, 0.1);
-            cursor: pointer;
-            background-color: #86dee8;
+        .contact-card-title i {
+            width: 36px; height: 36px;
+            border-radius: 9px;
+            background: rgba(13,110,253,0.10);
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: transform 0.2s, background 0.2s;
+            flex-shrink: 0;
+        }
+        body.dark-mode .contact-card-title i {
+            background: rgba(13,110,253,0.18);
+            color: #60a5fa;
         }
 
-        #themeToggle:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Dark mode navbar */
-        body.dark-mode nav {
-            background: linear-gradient(180deg, rgba(30, 30, 30, 0.95), rgba(20, 20, 20, 0.95));
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        }
-
-        body.dark-mode nav a {
-            color: #ffffff;
-        }
-
-        body.dark-mode #themeToggle {
-            background-color: #0d6efd;
-            color: #fff;
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            nav {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 1rem;
-                margin-top: 0;
-            }
-
-            nav a {
-                margin-bottom: 10px;
-            }
-        }
-
-        .contact-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #f9f9f9;
+        .contact-info-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+        .contact-info-list li { display: flex; gap: 10px; align-items: flex-start; }
+        .contact-info-list .info-icon {
+            width: 32px; height: 32px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: rgba(13,110,253,0.07);
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .contact-info-list .info-text strong {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 2px;
+        }
+        .contact-info-list .info-text span {
+            font-size: 0.9rem;
+            color: var(--text);
         }
 
-        .contact-info {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #e9ecef;
-            border-radius: 6px;
-        }
-
-        .contact-info h2 {
-            margin-top: 0;
-            color: #007bff;
-        }
-
-        .contact-info p {
-            margin-bottom: 10px;
-        }
-
-        .contact-form {
-            padding: 15px;
-            background-color: #e9ecef;
-            border-radius: 6px;
-        }
-
-        .contact-form h2 {
-            margin-top: 0;
-            color: #007bff;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
+        /* Form fields */
+        .form-group { margin-bottom: 16px; }
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 6px;
         }
-
         .form-group input[type="text"],
         .form-group input[type="email"],
         .form-group textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
+            padding: 10px 13px;
+            font-size: 0.93rem;
+            font-family: inherit;
+            font-weight: 500;
+            background: var(--surface-2, #f8faff);
+            color: var(--text);
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            outline: none;
             box-sizing: border-box;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
         }
-
-        .form-group textarea {
-            resize: vertical;
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13,110,253,0.12);
+            background: var(--surface);
         }
+        .form-group input::placeholder,
+        .form-group textarea::placeholder { color: var(--muted); opacity: 0.6; }
+        .form-group textarea { resize: vertical; min-height: 100px; }
 
         .submit-btn {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 15px;
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--grad, linear-gradient(135deg, #0d6efd, #6610f2));
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: inherit;
             border: none;
-            border-radius: 4px;
+            border-radius: 9px;
             cursor: pointer;
-            font-size: 1rem;
+            margin-top: 6px;
+            box-shadow: 0 4px 18px rgba(13,110,253,0.28);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
         }
-
-        .submit-btn:hover {
-            background-color: #218838;
-        }
-
-        body.dark-mode .contact-container {
-            background-color: #252525;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-        }
-
-        body.dark-mode .contact-info {
-            background-color: #333;
-        }
-
-        body.dark-mode .contact-info h2 {
-            color: #00bfff;
-        }
-
-        body.dark-mode .contact-info p {
-            color: #ccc;
-        }
-
-        body.dark-mode .contact-form {
-            background-color: #333;
-        }
-
-        body.dark-mode .contact-form h2 {
-            color: #00bfff;
-        }
-
-        body.dark-mode .form-group label {
-            color: #f0f0f0;
-        }
-
-        body.dark-mode .form-group input[type="text"],
-        body.dark-mode .form-group input[type="email"],
-        body.dark-mode .form-group textarea {
-            background-color: #444;
-            color: #f0f0f0;
-            border-color: #555;
-        }
-
-        body.dark-mode .submit-btn {
-            background-color: #28a745;
-            color: white;
-        }
-
-        body.dark-mode .submit-btn:hover {
-            background-color: #218838;
-        }
-
-        /* Success Message */
-        .form-submitted {
-            color: #28a745;
-            font-weight: bold;
-            margin-top: 10px;
-        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(13,110,253,0.36); }
+        .submit-btn:active { transform: translateY(0); }
     </style>
 </head>
 
 <body>
-    <nav>
-        <a href="homepage.html">Homepage</a>
-        <button id="themeToggle" class="theme-btn">
-            <span id="themeIcon">🌙</span> <span id="themeLabel"></span>
-        </button>
+    <nav class="site-nav" id="siteNav">
+        <div class="nav-inner">
+            <a href="homepage.html" class="nav-brand">
+                <img src="../assests_file/Loanify-titlelogo.png" alt="Loan-IFY" class="nav-logo">
+                <span class="nav-title">Loan-IFY</span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="homepage.html">Home</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="apply-loan.html">Apply Loan</a>
+                <a href="emi-calculator.html">EMI Calculator</a>
+            </div>
+            <div class="nav-end">
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                </button>
+            </div>
+            <button class="nav-hamburger" id="hamburgerBtn" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
     </nav>
 
-    <div class="contact-container">
-        <section class="contact-info">
-            <h2>Contact Information</h2>
-            <hr>
-            <br>
-            <p><strong>Address:</strong> 123 Loanify Avenue, Financial District, Anytown, India</p>
-            <p><strong>Email:</strong> support@loanify.com (This is a dummy email)</p>
-            <p><strong>Phone:</strong> +91 9876543210 (This is a dummy contact number)</p>
-            <p><strong>Office Hours:</strong> Monday - Friday, 9:00 AM to 6:00 PM IST</p>
-        </section>
+    <div class="contact-page">
 
-        <section class="contact-form">
-            <h2>For Any Queries :</h2>
-            <br>
-            <hr>
-            <br>
-            <form action="#" method="POST">
+        <!-- Contact Info Card -->
+        <div class="contact-card">
+            <div class="contact-card-title">
+                <i class="fas fa-building"></i>
+                Contact Information
+            </div>
+            <ul class="contact-info-list">
+                <li>
+                    <span class="info-icon"><i class="fas fa-map-marker-alt"></i></span>
+                    <div class="info-text">
+                        <strong>Address</strong>
+                        <span>123 Loanify Avenue, Financial District, Anytown, India</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="info-icon"><i class="fas fa-envelope"></i></span>
+                    <div class="info-text">
+                        <strong>Email</strong>
+                        <span>support@loanify.com</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="info-icon"><i class="fas fa-phone"></i></span>
+                    <div class="info-text">
+                        <strong>Phone</strong>
+                        <span>+91 9876543210</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="info-icon"><i class="fas fa-clock"></i></span>
+                    <div class="info-text">
+                        <strong>Office Hours</strong>
+                        <span>Monday – Friday, 9:00 AM – 6:00 PM IST</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Contact Form Card -->
+        <div class="contact-card">
+            <div class="contact-card-title">
+                <i class="fas fa-paper-plane"></i>
+                Send a Message
+            </div>
+            <form id="contact-form">
                 <div class="form-group">
-                    <label for="name">Your Name:</label>
-                    <input type="text" id="name" name="name" required>
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" placeholder="e.g. Riya Sharma" required>
                 </div>
                 <div class="form-group">
-                    <label for="email">Your Email:</label>
-                    <input type="email" id="email" name="email" required>
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
                 </div>
                 <div class="form-group">
-                    <label for="subject">Subject:</label>
-                    <input type="text" id="subject" name="subject">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" placeholder="How can we help?">
                 </div>
                 <div class="form-group">
-                    <label for="message">Message:</label>
-                    <textarea id="message" name="message" rows="5" required></textarea>
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="4" placeholder="Write your message here..." required></textarea>
                 </div>
                 <button type="submit" class="submit-btn">Send Message</button>
             </form>
-        </section>
+        </div>
+
     </div>
 
     <footer>
-        <p>&copy; 2025 Loan-IFY Inc. All rights reserved.</p>
-        <div class="social-links">
-            <a href="https://twitter.com/yourhandle" target="_blank" aria-label="Twitter">
-                <i class="fab fa-twitter"></i>
-            </a>
-            <a href="https://linkedin.com/in/yourhandle" target="_blank" aria-label="LinkedIn">
-                <i class="fab fa-linkedin-in"></i>
-            </a>
-            <a href="https://github.com/yourhandle" target="_blank" aria-label="GitHub">
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> Loan-IFY Inc. All rights reserved.</p>
 
     </footer>
 
     <script>
-
         document.addEventListener('DOMContentLoaded', function () {
-            const form = document.querySelector('.contact-form form');
-
+            const form = document.getElementById('contact-form');
             if (form) {
-                form.addEventListener('submit', function (event) {
-                    event.preventDefault();
-
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const btn = form.querySelector('.submit-btn');
+                    btn.disabled = true;
+                    btn.textContent = 'Sending…';
                     setTimeout(function () {
-                        alert('Your Query has been sent successfully!');
-
-                        const successMessage = document.createElement('p');
-                        successMessage.classList.add('form-submitted');
-                        successMessage.textContent = 'Form submitted successfully!';
-                        form.parentNode.insertBefore(successMessage, form.nextSibling);
-
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Message Sent!',
+                            text: 'We\'ll get back to you within 1–2 business days.',
+                            timer: 2800,
+                            showConfirmButton: false
+                        });
                         form.reset();
-
-                        setTimeout(function () {
-                            if (successMessage.parentNode) {
-                                successMessage.parentNode.removeChild(successMessage);
-                            }
-                        }, 5000);
-                    }, 1000);
+                        btn.disabled = false;
+                        btn.textContent = 'Send Message';
+                    }, 800);
                 });
             }
         });
     </script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const body = document.body;
-            const themeIcon = document.getElementById("themeIcon");
-
-
-            if (localStorage.getItem("theme") === "dark") {
-                body.classList.add("dark-mode");
-                if (themeIcon) themeIcon.textContent = "☀️ Light Mode";
-            }
-
-            const toggleBtn = document.getElementById("themeToggle");
-            if (toggleBtn) {
-                toggleBtn.addEventListener("click", () => {
-                    body.classList.toggle("dark-mode");
-                    const isDark = body.classList.contains("dark-mode");
-                    localStorage.setItem("theme", isDark ? "dark" : "light");
-                    if (themeIcon) themeIcon.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-                });
-            }
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+        document.getElementById('themeToggle')?.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        });
+        document.getElementById('hamburgerBtn')?.addEventListener('click', () => {
+            document.getElementById('navLinks')?.classList.toggle('open');
         });
     </script>
 </body>

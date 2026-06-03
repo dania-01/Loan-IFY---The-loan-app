@@ -3,106 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apply Loan Form</title>
+  <title>Apply for Loan — Loan-IFY</title>
+  <link rel="icon" href="../assests_file/Loanify-titlelogo.png" type="image/x-icon">
+  <script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('pre-dark');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css_files/nav.css">
   <link rel="stylesheet" href="../css_files/apply-loan.css">
-  <link rel="icon" href="../assests_file/Loanify-titlelogo.png" type="image/x-icon">  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    html.pre-dark body { background: #0a0f1a; }
+  </style>
 </head>
 <body>
-<nav>
-  <div class="logo-container">
-    <img src="../assests_file/Loanify-titlelogo.png" alt="Company Logo" class="logo">
-    <span class="company-name">Loan-IFY</span>
-  </div>
-  <div class="nav-links">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="contact.html">Contact Us</a>
-    <!-- 🌙 Theme toggle button -->
-    <button id="themeToggle" class="theme-btn">
-      <span id="themeIcon">🌙 Dark Mode</span>
+<script>if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark-mode');</script>
+
+<!-- NAV -->
+<nav class="site-nav" id="siteNav">
+  <div class="nav-inner">
+    <a href="homepage.html" class="nav-brand">
+      <img src="../assests_file/Loanify-titlelogo.png" alt="Loan-IFY" class="nav-logo">
+      <span class="nav-title">Loan-IFY</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="homepage.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="emi-calculator.html">EMI Calculator</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="nav-end">
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+    <button class="nav-hamburger" id="hamburgerBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
 
-<div id="loan-form-container">
-
-  <header>
-    <h1>Loan Application Form</h1>
-  </header>
-
-  <form id="loan-application-form">
-    <div class="form-group">
-      <label for="loan-amount">Loan Amount ($):</label>
-      <input type="number" id="loan-amount" name="loan-amount" placeholder="Enter loan amount" required>
-    </div>
-
-    <div class="form-group">
-      <label for="interest-rate">Interest Rate (%):</label>
-      <input type="number" id="interest-rate" name="interest-rate" placeholder="Enter interest rate" required>
-    </div>
-
-    <div class="form-group">
-      <label for="loan-duration">Loan Duration (Months):</label>
-      <input type="number" id="loan-duration" name="loan-duration" placeholder="Enter duration in months" required>
-    </div>
-
-    <div class="form-group">
-      <label for="loan-type">Loan Type:</label>
-      <select id="loan-type" name="loan-type" required>
-        <option value="personal">Personal Loan</option>
-        <option value="home">Home Loan</option>
-        <option value="education">Education Loan</option>
-        <option value="auto">Auto Loan</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="loan-purpose">Purpose of Loan:</label>
-      <select id="loan-purpose" name="loan-purpose" required>
-        <option value="buy_house">Buying a House</option>
-        <option value="pay_debts">Paying off Debts</option>
-        <option value="higher_education">Higher Education</option>
-        <option value="business">Business Investment</option>
-        <option value="emergency">Medical Emergency</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <button type="submit">Submit Application</button>
-    </div>
-  </form>
-
-  <div id="emi-calculator">
-    <h2>EMI Calculator</h2>
-    <form id="emi-calculator-form">
-      <div class="form-group">
-        <label for="emi-loan-amount">Loan Amount ($):</label>
-        <input type="number" id="emi-loan-amount" placeholder="Enter loan amount" required>
-      </div>
-
-      <div class="form-group">
-        <label for="emi-interest-rate">Interest Rate (%):</label>
-        <input type="number" id="emi-interest-rate" placeholder="Enter interest rate" required>
-      </div>
-
-      <div class="form-group">
-        <label for="emi-loan-duration">Loan Duration (Months):</label>
-        <input type="number" id="emi-loan-duration" placeholder="Enter duration in months" required>
-      </div>
-
-      <div id="emi-display">
-        <p>Your Monthly EMI will be: <strong><span id="emi-amount">$0.00</span></strong></p>
-      </div>
-
-      <div class="form-group">
-        <button type="button" id="calculate-emi-btn">Calculate EMI</button>
-      </div>
-    </form>
+<!-- PAGE CONTENT -->
+<div class="page-wrapper">
+  <div class="page-header">
+    <h1>Apply for a Loan</h1>
+    <p>Fill in your details below. Interest rates are set automatically based on loan type.</p>
   </div>
 
+  <div class="apply-single">
+    <div class="card" id="loan-form-container">
+
+      <!-- Limit reached notice (hidden by default) -->
+      <div id="limit-notice" class="limit-notice hidden">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>You have reached your <strong>$500,000</strong> credit limit. New applications are disabled.
+        <a href="emi-calculator.html" style="color:inherit;font-weight:700;margin-left:4px;">Use the EMI Calculator →</a></span>
+      </div>
+
+      <div class="card-header">
+        <span class="card-icon"><i class="fas fa-file-alt"></i></span>
+        <div>
+          <h2>Loan Application</h2>
+          <p class="card-sub">Complete all fields to submit</p>
+        </div>
+      </div>
+
+      <form id="loan-application-form">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="loan-amount">Loan Amount ($)</label>
+            <div class="input-wrap">
+              <span class="input-prefix">$</span>
+              <input type="number" id="loan-amount" name="loan-amount" placeholder="min. $50,000" min="50000" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="loan-duration">Duration (Months)</label>
+            <div class="input-wrap">
+              <input type="number" id="loan-duration" name="loan-duration" placeholder="e.g. 36" min="1" required>
+              <span class="input-suffix">mo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="loan-type">Loan Type</label>
+            <select id="loan-type" name="loan-type" required>
+              <option value="personal">Personal Loan</option>
+              <option value="home">Home Loan</option>
+              <option value="education">Education Loan</option>
+              <option value="auto">Auto Loan</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="interest-rate">
+              Interest Rate (%)
+              <span class="auto-badge">Auto</span>
+            </label>
+            <div class="input-wrap readonly-wrap">
+              <input type="number" id="interest-rate" name="interest-rate" readonly required>
+              <span class="input-suffix lock-icon"><i class="fas fa-lock"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="loan-purpose">Purpose of Loan</label>
+          <select id="loan-purpose" name="loan-purpose" required>
+            <option value="buy_house">Buying a House</option>
+            <option value="pay_debts">Paying off Debts</option>
+            <option value="higher_education">Higher Education</option>
+            <option value="business">Business Investment</option>
+            <option value="emergency">Medical Emergency</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-submit">Submit Application</button>
+      </form>
+
+      <div class="emi-calc-hint">
+        <i class="fas fa-calculator"></i>
+        Want to estimate your monthly payments first?
+        <a href="emi-calculator.html">Open EMI Calculator</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <footer>
-  <p>&copy; 2025 Loan-IFY Inc. All rights reserved.</p>
+  <p>&copy; <script>document.write(new Date().getFullYear())</script> Loan-IFY Inc. All rights reserved.</p>
 </footer>
 
 <script type="module" src="../js_files/apply-loan.js"></script>

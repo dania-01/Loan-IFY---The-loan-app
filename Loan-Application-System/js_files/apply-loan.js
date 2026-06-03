@@ -1,30 +1,33 @@
 import { auth, db } from './firebase_config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+const LOAN_LIMIT = 500000;
+const MIN_LOAN   = 50000;
 
 document.addEventListener('DOMContentLoaded', () => {
   const loanApplicationForm = document.getElementById('loan-application-form');
-  const calculateEmiBtn = document.getElementById('calculate-emi-btn');
 
-  // 🌙 THEME TOGGLE
-  const body = document.body;
-  const themeIcon = document.getElementById("themeIcon");
-  const toggleBtn = document.getElementById("themeToggle");
+  // Theme + nav handled by inline scripts in HTML
+  document.getElementById("themeToggle")?.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+  });
+  document.getElementById("hamburgerBtn")?.addEventListener("click", () => {
+    document.getElementById("navLinks")?.classList.toggle("open");
+  });
 
-  // Load saved theme
-  if (localStorage.getItem("theme") === "dark") {
-    body.classList.add("dark-mode");
-    if (themeIcon) themeIcon.textContent = "☀️ Light Mode";
+  // 📌 AUTO-FILL INTEREST RATE BASED ON LOAN TYPE
+  const INTEREST_RATES = { personal: 12, home: 8.5, education: 9, auto: 10 };
+  const loanTypeSelect = document.getElementById('loan-type');
+  const interestRateInput = document.getElementById('interest-rate');
+
+  function applyRate() {
+    const rate = INTEREST_RATES[loanTypeSelect.value];
+    if (rate) interestRateInput.value = rate;
   }
-
-  if (toggleBtn) {
-    toggleBtn.addEventListener("click", () => {
-      body.classList.toggle("dark-mode");
-      const isDark = body.classList.contains("dark-mode");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
-      if (themeIcon) themeIcon.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-    });
-  }
+  loanTypeSelect.addEventListener('change', applyRate);
+  applyRate();
 
   // 🔑 AUTH & LOAN FORM
   onAuthStateChanged(auth, (user) => {
@@ -32,6 +35,16 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = "../index.html";
       return;
     }
+
+    // Check loan limit on page load and disable form if exceeded
+    try {
+      const snap = await getDocs(query(collection(db, 'loan-applications'), where('userId', '==', user.uid)));
+      const totalUsed = snap.docs.reduce((sum, d) => sum + (d.data().loanAmount || 0), 0);
+      if (totalUsed >= LOAN_LIMIT) {
+        document.getElementById('limit-notice')?.classList.remove('hidden');
+        loanApplicationForm.querySelectorAll('input, select, button[type="submit"]').forEach(el => el.disabled = true);
+      }
+    } catch(err) { console.warn('Limit check failed', err); }
 
     loanApplicationForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -45,8 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const loanType = document.getElementById('loan-type').value;
       const loanPurpose = document.getElementById('loan-purpose').value;
 
-      if (loanAmount < 1000) {
-        alert("Loan amount should be at least $1000.");
+      if (loanAmount < MIN_LOAN) {
+        Swal.fire({ icon: 'warning', title: 'Amount Too Low', text: `Minimum loan amount is $${MIN_LOAN.toLocaleString()}.` });
         submitBtn.disabled = false;
         submitBtn.textContent = "Submit Application";
         return;
@@ -63,33 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
           userId: user.uid,
           createdAt: new Date()
         });
-        alert("✅ Loan application submitted successfully!");
+        Swal.fire({ icon: 'success', title: 'Application Submitted!', text: 'Your loan application is now pending review.', timer: 2500, showConfirmButton: false });
         loanApplicationForm.reset();
       } catch (error) {
         console.error("Error submitting loan application:", error);
-        alert("❌ Failed to submit loan application. Check permissions in Firestore rules.");
+        Swal.fire({ icon: 'error', title: 'Submission Failed', text: 'Could not submit application. Please try again.' });
       }
 
       submitBtn.disabled = false;
       submitBtn.textContent = "Submit Application";
     });
 
-    // 📊 EMI Calculator
-    calculateEmiBtn.addEventListener('click', () => {
-      const emiLoanAmount = parseFloat(document.getElementById('emi-loan-amount').value);
-      const emiInterestRate = parseFloat(document.getElementById('emi-interest-rate').value);
-      const emiLoanDuration = parseInt(document.getElementById('emi-loan-duration').value);
-
-      if (emiLoanAmount <= 0 || emiInterestRate <= 0 || emiLoanDuration <= 0) {
-        alert("Please enter valid values for loan amount, interest rate, and duration.");
-        return;
-      }
-
-      const monthlyInterestRate = emiInterestRate / 100 / 12;
-      const emi = emiLoanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, emiLoanDuration) /
-        (Math.pow(1 + monthlyInterestRate, emiLoanDuration) - 1);
-
-      document.getElementById('emi-amount').textContent = `$${emi.toFixed(2)}`;
-    });
   });
 });

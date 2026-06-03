@@ -27,12 +27,13 @@ onAuthStateChanged(auth, async (user) => {
       }
     }
 
-    // Show welcome + logout button if login page has .container
-    const loginContainer = document.querySelector('.container');
+    // Show welcome + logout button on the login page
+    const loginContainer = document.querySelector('.auth-form-inner');
     if (loginContainer) {
       loginContainer.innerHTML = `
-        <h2>Welcome back, ${user.email}</h2>
-        <button id="logout-btn" class="btn btn-danger">Logout</button>
+        <h2>Welcome back!</h2>
+        <p style="color:var(--muted,#64748b);margin-bottom:20px;">${user.email}</p>
+        <button id="logout-btn" class="btn-submit">Logout</button>
       `;
       document.getElementById('logout-btn').addEventListener('click', async () => {
         await signOut(auth);

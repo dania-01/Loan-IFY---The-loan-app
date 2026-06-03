@@ -1,6 +1,6 @@
 import { auth, db } from './firebase_config.js'; // Ensure this path is correct
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { collection, getDocs, query, where, orderBy, updateDoc, doc, serverTimestamp, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; // Added addDoc + serverTimestamp
+import { collection, getDocs, query, where, updateDoc, doc, getDoc, serverTimestamp, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 function calculateEndDate(startDate, durationInMonthsStr) {
   const durationInMonths = parseInt(durationInMonthsStr, 10);
@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const usernameElement = document.getElementById('username');
   const totalLoanAmountElement = document.getElementById('total-loan-amount');
   const acceptedLoansDetailsElement = document.getElementById('active-loan-details');
+  // stat-tile-loan-detail: target for accepted loan info cards
   const upcomingPaymentsDetailsElement = document.getElementById('upcoming-payments-details');
   const loanHistoryBody = document.getElementById('loan-history-body');
   const logoutBtn = document.getElementById('logout-btn');
@@ -32,10 +33,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let userGlobal = null;
   let userTotalLoanAmount = 0;
+  const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // Apply button navigates only when not disabled
+  applyLoanButton?.addEventListener('click', () => {
+    if (!applyLoanButton.disabled) window.location.href = 'apply-loan.html';
+  });
 
   onAuthStateChanged(auth, async (user) => {
     userGlobal = user;
     if (user) {
+      // Redirect admins to their own panel
+      try {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists() && userDoc.data().role === 'admin') {
+          window.location.href = 'admin.html';
+          return;
+        }
+      } catch(err) { console.warn('Role check failed', err); }
+
       usernameElement.textContent = user.email || "User";
       clearDashboardData();
       await fetchAndDisplayData();
@@ -61,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    console.log(`Workspaceing data for user: ${userGlobal.uid}`);
+    console.log(`Fetching data for user: ${userGlobal.uid}`);
     try {
       const loansCollectionRef = collection(db, "loan-applications");
       const q = query(loansCollectionRef, where("userId", "==", userGlobal.uid));
@@ -110,8 +126,10 @@ document.addEventListener('DOMContentLoaded', () => {
             endDate: endDateStr
           });
 
-          // EMI = (loanAmount * (1 + interestRate/100)) / tenure
-          const emi = Math.floor((loanAmount * (1 + interestRate / 100)) / tenure);
+          const monthlyRate = interestRate / 100 / 12;
+          const emi = monthlyRate === 0
+            ? loanAmount / tenure
+            : loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure) / (Math.pow(1 + monthlyRate, tenure) - 1);
 
           // Next due date = 12th of next month
           const now = new Date();
@@ -128,67 +146,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
       upcomingPayments.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
 
-      totalLoanAmountElement.textContent = `$${totalLoanAmountApplied.toFixed(2)}`;
-      userTotalLoanAmount = totalLoanAmountApplied; // For limit check
+      totalLoanAmountElement.textContent = `$${fmt(totalLoanAmountApplied)}`;
+      userTotalLoanAmount = totalLoanAmountApplied;
 
       if (acceptedLoansDetailsArray.length > 0) {
         acceptedLoansDetailsElement.innerHTML = acceptedLoansDetailsArray.map(loan => `
-          <div class="alert alert-info mb-2" role="alert">
-            <p class="mb-1"><strong>Loan ID:</strong> ${loan.id}</p>
-            <p class="mb-1"><strong>Amount:</strong> $${loan.amount.toFixed(2)} | <strong>Type:</strong> ${loan.type}</p>
-            <p class="mb-0"><strong>Status:</strong> ${loan.status} | <strong>End Date:</strong> ${loan.endDate}</p>
+          <div class="loan-info-card">
+            <div class="loan-info-row">
+              <span class="info-key">Loan ID</span>
+              <span class="info-val info-mono">${loan.id}</span>
+            </div>
+            <div class="loan-info-row">
+              <span class="info-key">Amount</span>
+              <span class="info-val info-amount">$${fmt(loan.amount)}</span>
+            </div>
+            <div class="loan-info-row">
+              <span class="info-key">Type</span>
+              <span class="info-val">${loan.type}</span>
+            </div>
+            <div class="loan-info-row">
+              <span class="info-key">Status</span>
+              <span class="info-val info-status accepted">${loan.status}</span>
+            </div>
+            <div class="loan-info-row">
+              <span class="info-key">End Date</span>
+              <span class="info-val">${loan.endDate}</span>
+            </div>
           </div>
         `).join('');
       } else {
-        acceptedLoansDetailsElement.innerHTML = '<p class="text-muted">No accepted loans found.</p>';
+        acceptedLoansDetailsElement.innerHTML = '<p class="dash-empty">No accepted loans.</p>';
       }
 
-   if (upcomingPayments.length > 0) {
-  upcomingPaymentsDetailsElement.innerHTML = upcomingPayments.map(payment => {
-    const loan = querySnapshot.docs.find(d => d.id === payment.loanId)?.data();
-    const isPaid = loan?.paymentStatus === "Paid";
+      if (upcomingPayments.length > 0) {
+        upcomingPaymentsDetailsElement.innerHTML = upcomingPayments.map(payment => {
+          const loan = querySnapshot.docs.find(d => d.id === payment.loanId)?.data();
+          const isPaid = loan?.paymentStatus === "Paid";
 
-    return `
-      <div class="alert alert-warning mb-2" role="alert">
-        <p class="mb-1"><strong>Loan ID:</strong> ${payment.loanId} (${payment.loanType})</p>
-        <p class="mb-1"><strong>Due Date:</strong> ${formatDate(payment.dueDate)}</p>
-        <p class="mb-1"><strong>Amount Due:</strong> $${payment.amount.toFixed(2)}</p>
-        ${isPaid 
-          ? `<span class="badge bg-success">Paid</span>` 
-          : `<button class="btn btn-sm btn-success pay-now-btn" 
-                data-loan-id="${payment.loanId}" 
-                data-amount="${payment.amount}" 
-                data-due-date="${payment.dueDate}">
-                Pay Now
-             </button>`}
-      </div>
-    `;
-  }).join('');
+          return `
+            <div class="payment-card">
+              <div class="payment-card-body">
+                <div class="payment-meta-row">
+                  <span class="info-key">Loan ID</span>
+                  <span class="info-val info-mono">${payment.loanId} <span class="payment-type">(${payment.loanType})</span></span>
+                </div>
+                <div class="payment-meta-row">
+                  <span class="info-key">Due Date</span>
+                  <span class="info-val">${formatDate(payment.dueDate)}</span>
+                </div>
+                <div class="payment-meta-row">
+                  <span class="info-key">Amount Due</span>
+                  <span class="info-val info-amount">$${fmt(payment.amount)}</span>
+                </div>
+              </div>
+              <div class="payment-card-action">
+                ${isPaid
+                  ? `<span class="info-status accepted">Paid</span>`
+                  : `<button class="pay-now-btn" data-loan-id="${payment.loanId}" data-amount="${payment.amount}" data-due-date="${payment.dueDate}">Pay Now</button>`}
+              </div>
+            </div>
+          `;
+        }).join('');
 
       } else {
         upcomingPaymentsDetailsElement.innerHTML = '<p class="text-muted">No upcoming payments found.</p>';
       }
 
-      const getStatusBadgeClass = (status) => {
-        switch (status?.toLowerCase()) {
-          case 'accepted': return 'bg-success';
-          case 'pending': return 'bg-warning text-dark';
-          case 'rejected': return 'bg-danger';
-          case 'completed': return 'bg-primary';
-          default: return 'bg-secondary';
-        }
-      };
-
       loanHistoryBody.innerHTML = loanHistory.map(loan => `
         <tr>
-          <td>${loan.loanId}</td>
-          <td>$${loan.loanAmount.toFixed(2)}</td>
-          <td>${loan.loanType}</td>
-          <td><span class="badge ${getStatusBadgeClass(loan.status)}">${loan.status}</span></td>
+          <td class="loan-id-cell">${loan.loanId}</td>
+          <td><strong>$${fmt(loan.loanAmount)}</strong></td>
+          <td style="text-transform:capitalize">${loan.loanType}</td>
+          <td><span class="info-status ${loan.status.toLowerCase()}">${loan.status}</span></td>
           <td>${loan.startDate}</td>
           <td>${loan.endDate}</td>
           <td>
-            ${loan.status}
+            ${loan.status.toLowerCase() === 'pending'
+              ? `<button class="cancel-loan-btn" data-loan-id="${loan.loanId}">Cancel</button>`
+              : '—'}
           </td>
         </tr>
       `).join('');
@@ -197,16 +232,30 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const LOAN_LIMIT = 500000;
-      if (userTotalLoanAmount >= LOAN_LIMIT) {
+      const pct = Math.min(100, (userTotalLoanAmount / LOAN_LIMIT) * 100);
+      const remaining = Math.max(0, LOAN_LIMIT - userTotalLoanAmount);
+      const limitReached = userTotalLoanAmount >= LOAN_LIMIT;
+
+      // Update progress bar
+      const fill = document.getElementById('llw-fill');
+      const pctEl = document.getElementById('llw-pct');
+      const usedEl = document.getElementById('llw-used');
+      const remainEl = document.getElementById('llw-remain');
+
+      if (fill)   { fill.style.width = `${pct}%`; fill.className = 'llw-fill' + (pct >= 100 ? ' danger' : pct >= 75 ? ' warning' : ''); }
+      if (pctEl)  pctEl.textContent = `${Math.round(pct)}%`;
+      if (usedEl) usedEl.textContent = `$${fmt(userTotalLoanAmount)} used`;
+      if (remainEl) remainEl.textContent = limitReached ? 'Limit reached' : `$${fmt(remaining)} remaining`;
+
+      // Apply button — no <a> wrapper so disabled truly blocks navigation
+      if (limitReached) {
         applyLoanButton.disabled = true;
-        applyLoanButton.textContent = "Loan Limit Reached";
-        applyLoanButton.classList.add('btn-danger');
-        applyLoanButton.classList.remove('btn-primary');
+        applyLoanButton.textContent = 'Limit Reached';
+        applyLoanButton.classList.add('limit-reached');
       } else {
         applyLoanButton.disabled = false;
-        applyLoanButton.textContent = "Apply for Loan";
-        applyLoanButton.classList.remove('btn-danger');
-        applyLoanButton.classList.add('btn-primary');
+        applyLoanButton.textContent = '+ Apply for Loan';
+        applyLoanButton.classList.remove('limit-reached');
       }
 
       addLoanActionListeners();
@@ -256,6 +305,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (confirmed.isConfirmed) {
           await updateLoanStatus(loanId, 'Rejected');
+        }
+      } else if (target.classList.contains('cancel-loan-btn')) {
+        const confirmed = await Swal.fire({
+          title: 'Cancel Application?',
+          text: `Are you sure you want to cancel loan ${loanId}? This cannot be undone.`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#dc3545',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Yes, cancel it!'
+        });
+        if (confirmed.isConfirmed) {
+          await updateLoanStatus(loanId, 'Cancelled');
         }
       }
     });
