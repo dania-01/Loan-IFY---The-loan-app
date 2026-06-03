@@ -18,8 +18,9 @@ onAuthStateChanged(auth, async (user) => {
     const userDoc = await getDoc(doc(db, "users", user.uid));
     const role = userDoc.exists() ? userDoc.data().role : "customer";
 
-    // Role-based redirect if on login page
-    if (window.location.pathname.endsWith("index.html")) {
+    // Role-based redirect if on login page (works on Netlify where path is "/" too)
+    const p = window.location.pathname;
+    if (p.endsWith("index.html") || p === "/" || p.endsWith("/")) {
       if (role === "admin") {
         window.location.href = "html_files/admin.html";
       } else {

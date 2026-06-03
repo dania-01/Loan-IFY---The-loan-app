@@ -200,9 +200,20 @@ body.dark-mode .nav-hamburger span { background: #f1f5f9; }
 @media (max-width: 860px) {
   .nav-hamburger { display: flex; }
 
+  /* Must be visible so the absolute dropdown is not clipped */
+  .nav-inner {
+    overflow: visible;
+    padding: 0 1rem;
+  }
+
+  /* Push theme toggle + hamburger to the right */
+  .nav-end {
+    margin-left: auto;
+  }
+
   .nav-links {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 62px;
     left: 0;
     right: 0;
@@ -216,7 +227,7 @@ body.dark-mode .nav-hamburger span { background: #f1f5f9; }
     gap: 2px;
     margin-left: 0;
     box-shadow: 0 8px 24px rgba(15,23,42,0.10);
-    z-index: 199;
+    z-index: 9999;
   }
   body.dark-mode .nav-links {
     background: rgba(17,24,39,0.97);
@@ -224,8 +235,6 @@ body.dark-mode .nav-hamburger span { background: #f1f5f9; }
   }
   .nav-links.open { display: flex; }
   .nav-links a { padding: 10px 14px; }
-
-  .nav-inner { padding: 0 1rem; }
 }
 
 /* ============================================================

@@ -499,9 +499,42 @@ footer {
   section { padding: 16px 18px; }
   .payment-card { flex-direction: column; align-items: flex-start; }
 }
+
+/* Card-style table on mobile */
+@media (max-width: 640px) {
+  .table-responsive { border-radius: var(--radius-sm); }
+  #loan-history-table thead { display: none; }
+  #loan-history-table,
+  #loan-history-table tbody,
+  #loan-history-table tr,
+  #loan-history-table td { display: block; width: 100%; }
+  #loan-history-table tr {
+    border-bottom: 1px solid var(--border);
+    padding: 12px 14px;
+  }
+  #loan-history-table tr:last-child { border-bottom: none; }
+  #loan-history-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: none;
+    font-size: 0.87rem;
+  }
+  #loan-history-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    flex-shrink: 0;
+    margin-right: 12px;
+  }
+}
+
 @media (max-width: 480px) {
   .dash-username { font-size: 1.15rem; }
-  #loan-history-table thead th, #loan-history-table td { padding: 8px 10px; font-size: 0.8rem; }
 }
 
 /* ---- Motion ---- */

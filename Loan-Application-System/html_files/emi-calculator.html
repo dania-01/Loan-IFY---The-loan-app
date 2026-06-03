@@ -119,7 +119,10 @@
       </div>
       <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border); text-align:center;">
         <p style="font-size:0.83rem; color:var(--muted); margin-bottom:12px;">Ready to apply for a loan?</p>
-        <a href="apply-loan.html" class="btn-submit" style="display:inline-block; text-decoration:none; padding:11px 28px;">Apply for a Loan</a>
+        <a href="apply-loan.html" id="emi-apply-btn" class="btn-submit" style="display:inline-block; text-decoration:none; padding:11px 28px;">Apply for a Loan</a>
+        <div id="emi-limit-notice" style="display:none; margin-top:14px; padding:12px 16px; border-radius:10px; background:rgba(220,38,38,0.08); border:1px solid rgba(220,38,38,0.22); color:#b91c1c; font-size:0.85rem; font-weight:600;">
+          <i class="fas fa-ban" style="margin-right:6px;"></i> Credit limit reached — please contact admin.
+        </div>
       </div>
     </div>
   </div>
@@ -129,7 +132,13 @@
   <p>&copy; <script>document.write(new Date().getFullYear())</script> Loan-IFY Inc. All rights reserved.</p>
 </footer>
 
-<script>
+<script type="module">
+  import { auth, db } from '../js_files/firebase_config.js';
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  const LOAN_LIMIT = 500000;
+
   document.getElementById('themeToggle')?.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
@@ -155,6 +164,24 @@
     document.getElementById('emi-amount').textContent = `$${fmt(emi)}`;
     document.getElementById('emi-total').textContent = `$${fmt(total)}`;
     document.getElementById('emi-result').classList.remove('hidden');
+  });
+
+  // Check credit limit and disable Apply button if reached
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+    try {
+      const snap = await getDocs(query(collection(db, 'loan-applications'), where('userId', '==', user.uid)));
+      const totalUsed = snap.docs.reduce((sum, d) => sum + (d.data().loanAmount || 0), 0);
+      if (totalUsed >= LOAN_LIMIT) {
+        const applyBtn = document.getElementById('emi-apply-btn');
+        const notice = document.getElementById('emi-limit-notice');
+        applyBtn.style.pointerEvents = 'none';
+        applyBtn.style.opacity = '0.45';
+        applyBtn.removeAttribute('href');
+        applyBtn.title = 'Credit limit reached — contact admin';
+        notice.style.display = 'block';
+      }
+    } catch(err) { console.warn('EMI page limit check failed', err); }
   });
 </script>
 </body>
